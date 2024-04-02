@@ -1,0 +1,273 @@
+
+R Under development (unstable) (2023-10-30 r85440) -- "Unsuffered Consequences"
+Copyright (C) 2023 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> require(confintROB)
+Loading required package: confintROB
+> require(lme4)
+Loading required package: lme4
+Loading required package: Matrix
+> require(robustvarComp)
+Loading required package: robustvarComp
+> 
+> test.varComprob <-
++   function(object, data = sleepstudy) {
++     cat("Running test for object of class ", class(object), "\n")
++     set.seed(123)
++     result <-
++       confintROB:::createParamSampleFunction(model = object,
++                                              data = data)(2)
++     return(result)
++   }
+> 
+> participant <- sleepstudy$Subject
+> within <- sleepstudy$Days
+> 
+> # Build the argument "groups" of the varComprob() function
+> n <- length(unique(participant)) # the number of participants
+> J <-
++   length(unique(within)) # the number of repeated observations per participant
+> groups <-
++   cbind(rep(1:J, each = n), rep((1:n), J)) # a numeric matrix with two columns used to group the observations according to participant.
+> 
+> # Build the argument "varcov" of the varComprob() function
+> z1 <-
++   rep(1, J) #Value for intercept (=1) for the J observations by clusters
+> z2 <- unique(within) # Value for the time variable
+> 
+> K <-
++   list(
++     # Matrix for intercept
++     sigma2_u0 = tcrossprod(z1, z1),
++     # Matrix of interaction Intercept by time variable
++     Covariance = tcrossprod(z1, z2) + tcrossprod(z2, z1),
++     # Matrix for time variable
++     sigma2_u1 = tcrossprod(z2, z2)
++   )
+> 
+> # Estimation with S-estimator
+> suppressWarnings(
++   model.S <-
++     varComprob(
++       Reaction ~ 1 + Days,
++       groups = groups,
++       data = sleepstudy,
++       varcov = K,
++       control = varComprob.control(
++         lower = c(0, -Inf, 0),
++         method = "S",
++         psi = "rocke",
++         max.it = 1,
++         init = list(
++           beta = c("(Intercept)" = 253.835569743834, Days = 10.7736608268214),
++           gamma = c(
++             sigma2_u0 = 1.59549700005736,
++             Covariance = -0.0711447985744645,
++             sigma2_u1 = 0.0765023178239254
++           ),
++           eta0 = c("error variance" = 692.556625895202),
++           scale = 10752.1432565101
++         )
++       )
++     )
++ )
+> print(summary(model.S), digits = 2)
+Method:  S 
+
+Fixed effects: 
+            Estimate Std. Error z value Pr(>|z|)    
+(Intercept)    253.8        6.6    38.2   <2e-16 ***
+Days            10.8        1.6     6.9    7e-12 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+ Random effect variances: 
+ sigma2_u0 Covariance  sigma2_u1 
+1104.97202  -49.27180   52.98219 
+
+ Residual variance: 
+error variance 
+      692.5566 
+
+ Value of the objective function at convergence: 
+[1] 10752.14
+
+
+Robustness weights: 
+ 6 observations c(1,6,7,11,15,18) are outliers with |weight| = 0 ( < 0.005556); 
+ The remaining 12 ones are summarized as
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+0.3215799 0.4935559 0.9459881 0.8379223 1.0917200 1.2086610 
+> result <- test.varComprob(model.S)
+Running test for object of class  varComprob.S varComprob.fit varComprob 
+> print(head(result[[1]]), digits = 5)
+     1      2      3      4      5      6 
+251.71 322.29 206.80 325.15 274.34 329.96 
+> print(head(result[[2]]), digits = 5)
+     1      2      3      4      5      6 
+220.15 261.71 366.48 295.06 290.76 366.08 
+> 
+> # Estimation with composite-TAU estimator
+> control <- varComprob.control(
++   lower = c(0, -Inf, 0),
++   max.it = 1,
++   init = list(
++     beta = c("(Intercept)" = 250.945321738908, Days = 10.2320816031076),
++     gamma = c(
++       sigma2_u0 = 2.17362686604633,
++       Covariance = -0.0704396118106077,
++       sigma2_u1 = 0.132062984417908
++     ),
++     eta0 = c("error variance" = 376.800691794604),
++     scales = c(
++       293.57715136143,
++       358.95262673052,
++       465.547583256656,
++       561.3346991483,
++       692.21765047862,
++       932.623947285384,
++       641.528419359161,
++       846.716921562313,
++       924.543567137878,
++       365.994312558323,
++       481.953914967322,
++       585.564052671342,
++       697.829285167833,
++       1009.71707572247,
++       672.461886751178,
++       982.606142686251,
++       936.132126983003,
++       248.037407578449,
++       374.605889784185,
++       536.450389280523,
++       854.773265534817,
++       632.866330961722,
++       855.224511580672,
++       962.333779104256,
++       391.221328441633,
++       629.884894368671,
++       834.926952170133,
++       882.869865599689,
++       1022.24447287146,
++       1168.56340641807,
++       575.172734225926,
++       715.931584462354,
++       671.517853836347,
++       949.863650035998,
++       1052.4253043978,
++       760.626391277738,
++       523.076365944673,
++       681.762701791185,
++       943.357505068095,
++       914.246654077684,
++       856.56616457374,
++       1309.32923881337,
++       717.252457844454,
++       685.620374481247,
++       781.788840625603
++     )
++   )
++ )
+> 
+> suppressWarnings(
++   model.cTAU <- varComprob(
++     Reaction ~ 1 + Days,
++     groups = groups,
++     data = sleepstudy,
++     varcov = K,
++     control = control
++   )
++ )
+> print(summary(model.cTAU), digits = 2)
+Method:  compositeTau 
+
+Fixed effects: 
+            Estimate Std. Error z value Pr(>|z|)    
+(Intercept)    250.9        7.8    32.2   <2e-16 ***
+Days            10.2        1.5     6.7    3e-11 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+ Random effect variances: 
+ sigma2_u0 Covariance  sigma2_u1 
+ 819.02411  -26.54169   49.76142 
+
+ Residual variance: 
+error variance 
+      376.8007 
+
+ Value of the objective function at convergence: 
+[1] 7675.007
+> result_original <- test.varComprob(model.cTAU)
+Running test for object of class  varComprob.compositeTau varComprob.fit varComprob 
+> print(head(result_original[[1]]), digits = 5)
+     1      2      3      4      5      6 
+251.66 308.23 213.82 315.15 274.40 321.11 
+> print(head(result_original[[2]]), digits = 5)
+     1      2      3      4      5      6 
+225.00 257.90 344.42 289.68 289.04 346.64 
+> 
+> # the same using a permuted dataset
+> set.seed(1)
+> permutation <- sample.int(nrow(sleepstudy))
+> print(head(permutation))
+[1]  68 167 129 162  43  14
+> groups_permuted <- groups[permutation, ]
+> data_permuted <- sleepstudy[permutation, ]
+> 
+> suppressWarnings(
++   model.cTAU_permuted <- varComprob(
++     Reaction ~ 1 + Days,
++     groups = groups_permuted,
++     data = data_permuted,
++     varcov = K,
++     control = control
++   )
++ )
+> print(summary(model.cTAU_permuted), digits = 2)
+Method:  compositeTau 
+
+Fixed effects: 
+            Estimate Std. Error z value Pr(>|z|)    
+(Intercept)    250.9        7.8    32.2   <2e-16 ***
+Days            10.2        1.5     6.7    3e-11 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+ Random effect variances: 
+ sigma2_u0 Covariance  sigma2_u1 
+ 819.02411  -26.54169   49.76142 
+
+ Residual variance: 
+error variance 
+      376.8007 
+
+ Value of the objective function at convergence: 
+[1] 7675.007
+> result_permuted <- test.varComprob(model.cTAU_permuted, data = data_permuted)
+Running test for object of class  varComprob.compositeTau varComprob.fit varComprob 
+> print(head(result_permuted[[1]]), digits = 5)
+    68    167    129    162     43     14 
+315.19 319.75 307.52 269.58 272.30 318.29 
+> print(head(result_permuted[[2]]), digits = 5)
+    68    167    129    162     43     14 
+323.84 268.18 335.08 214.43 293.81 309.89 
+> result_expected <- lapply(result_original, `[`, permutation)
+> stopifnot(all.equal(result_expected, result_permuted))
+> 
+> proc.time()
+   user  system elapsed 
+  2.674   0.097   2.772 

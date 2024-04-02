@@ -1,0 +1,13 @@
+citHeader("To cite ‘confintROB’ in publications use:")
+
+bibentry(
+  key = "confintROB2024",
+  bibtype  = "Manual",
+  doi = "10.1037/met0000643",
+  url = "https://psycnet.apa.org/record/2024-54080-001",
+  author = c(person("Fabio", "Mason"), person("Eva", "Cantoni"), person("Paolo", "Ghisletta")),
+  title = "Linear mixed models and latent growth curve models for group comparison studies contaminated by outliers.",
+  publisher = "Psychological Methods",
+  year = "2024"
+)
+
