@@ -17,12 +17,11 @@ checkClusterID <- function(object, clusterID, method, boot.type) {
         " for varComprob objects"
       )
     }
-  } else if (getOption("confintROB.checkClusterID.message.ignored", TRUE)) {
+  } else {
     message(
       "Ignoring argument 'clusterID' as it's not needed ",
       "for this combination of arguments"
     )
-    options("confintROB.checkClusterID.message.ignored" = FALSE)
   }
 }
 
@@ -33,10 +32,9 @@ checkData <- function(object, varComprob.data, method, boot.type) {
       stop("Argument 'varComprob.data' is needed to compute bootstrap Confidence Intervals",
            " for varComprob objects")
     }
-  } else if (getOption("confintROB.checkdata.message.ignored", TRUE)) {
+  } else {
     message("Ignoring argument 'varComprob.data' as it's not needed ",
             "for this combination of arguments")
-    options("confintROB.checkdata.message.ignored" = FALSE)
   }
 }
 

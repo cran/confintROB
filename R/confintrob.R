@@ -35,14 +35,14 @@
 #' \code{\link[robustlmm]{rlmer}} 
 #' \code{\link[robustvarComp]{varComprob}}
 #' 
-#' @title Confidence Intervals for robust and classical Linear Mixed Model estimators.
+#' @title Confidence Intervals for Robust and Classical Linear Mixed Model Estimators.
 #' @param object an object of class \code{lmerMod}, \code{rlmerMod} or \code{varComprob}
 #' @param parm parameters for which intervals are sought. Specified by an integer vector of positions (see example) or a character vector of parameter names. Fixed effects parameters are ordered according their appearance in the formula. For the order of variance components, see argument \code{order} of the \code{varCorr} function from package \code{\link[lme4]{lme4}}. By default, the CIs of all the parameters of the model are computed.
 #' @param level confidence level in ]0; 1[
 #' @param method type of CIs: \code{"Wald"}, \code{"boot"}, \code{"BCa"}
 #' @param nsim number of bootstrap samples, positive integer
 #' @param boot.type type of bootstrap: \code{"wild"} or \code{"parametric"}
-#' @param clusterID text variable indicating the clustering variable. This is only required for method \code{"BCa"} or for boot.type \code{"wild"} for \code{\link[robustvarComp]{varComprob}} objects
+#' @param clusterID text variable indicating the clustering variable. This is only required for method \code{"BCa"} or for boot.type \code{"wild"} for \code{\link[robustvarComp]{varComprob}} objects. This vector is used to identify the level of the "cluster" to which these resampling methods should be applied and is not included in the \code{\link[robustvarComp]{varComprob}} objects.
 #' @param verify.saved check if an existing CI is already computed. Only for the vignette examples
 #' @param .export passed on to \code{\link[foreach]{foreach}}
 #' @param varComprob.data a data frame object used to fit the original model. This is only required for the \code{varComprob} objects
@@ -52,14 +52,15 @@
 #' @return a numeric table (matrix with column and row names) of CIs.
 #' @export
 #' @examples
-#' library(robustlmm)
-#' model.RSE <- rlmer(Reaction ~ 1 + Days + (Days|Subject),
-#'                   data = sleepstudy)
-#' CI.RSE <- confintROB(model.RSE, level = .95, boot.type = "wild",
-#'                   parm = c(1,2), # indicates that only CIs 
-#'                                  # for the intercept and Days are asked.
-#'                   nsim = 10) # small nsim for speed, in practice use, e.g., 5000 
-#' print(CI.RSE)
+#' if (require(robustlmm)) {
+#'   model.RSE <- rlmer(Reaction ~ 1 + Days + (Days|Subject),
+#'                     data = sleepstudy)
+#'   CI.RSE <- confintROB(model.RSE, level = .95, boot.type = "wild",
+#'                     parm = c(1,2), # indicates that only CIs
+#'                                    # for the intercept and Days are asked.
+#'                     nsim = 10) # small nsim for speed, in practice use, e.g., 5000
+#'   print(CI.RSE)
+#' }
 #' @importFrom lme4 confint.merMod
 #' @importFrom utils packageVersion
 confintROB <-

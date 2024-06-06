@@ -18,7 +18,7 @@ clusjack.varComprob <-
     clusters <- unlist(labels(cluster))
     nc <- length(clusters)
     
-    coefs <- matrix(NA, nrow = nc, ncol = p)
+    coefs <- matrix(NA_real_, nrow = nc, ncol = p)
     Obsno <- split(1:n_obs, model$model$`(groups)`[, 2])
     ii <-
       NULL ## to avoid warning about no visible binding in R CMD check

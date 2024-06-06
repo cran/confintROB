@@ -2,7 +2,7 @@
 % Please edit documentation in R/confintrob.R
 \name{confintROB}
 \alias{confintROB}
-\title{Confidence Intervals for robust and classical Linear Mixed Model estimators.}
+\title{Confidence Intervals for Robust and Classical Linear Mixed Model Estimators.}
 \usage{
 confintROB(
   object,
@@ -32,7 +32,7 @@ confintROB(
 
 \item{boot.type}{type of bootstrap: \code{"wild"} or \code{"parametric"}}
 
-\item{clusterID}{text variable indicating the clustering variable. This is only required for method \code{"BCa"} or for boot.type \code{"wild"} for \code{\link[robustvarComp]{varComprob}} objects}
+\item{clusterID}{text variable indicating the clustering variable. This is only required for method \code{"BCa"} or for boot.type \code{"wild"} for \code{\link[robustvarComp]{varComprob}} objects. This vector is used to identify the level of the "cluster" to which these resampling methods should be applied and is not included in the \code{\link[robustvarComp]{varComprob}} objects.}
 
 \item{verify.saved}{check if an existing CI is already computed. Only for the vignette examples}
 
@@ -71,14 +71,15 @@ Implements the classical Wald-type CI, the parametric and the wild bootstrap (Mo
 - \code{"wild"}: the semi-parametric bootstrap scheme is used to create bootstrap sample(s)
 }
 \examples{
-library(robustlmm)
-model.RSE <- rlmer(Reaction ~ 1 + Days + (Days|Subject),
-                  data = sleepstudy)
-CI.RSE <- confintROB(model.RSE, level = .95, boot.type = "wild",
-                  parm = c(1,2), # indicates that only CIs 
-                                 # for the intercept and Days are asked.
-                  nsim = 10) # small nsim for speed, in practice use, e.g., 5000 
-print(CI.RSE)
+if (require(robustlmm)) {
+  model.RSE <- rlmer(Reaction ~ 1 + Days + (Days|Subject),
+                    data = sleepstudy)
+  CI.RSE <- confintROB(model.RSE, level = .95, boot.type = "wild",
+                    parm = c(1,2), # indicates that only CIs
+                                   # for the intercept and Days are asked.
+                    nsim = 10) # small nsim for speed, in practice use, e.g., 5000
+  print(CI.RSE)
+}
 }
 \references{
 Agostinelli, C., & Yohai, V. J. (2016). Composite robust estimators for linear mixed models. Journal of the American Statistical Association, 111 (516), 1764-1774. doi:10.1080/01621459.2015.1115358

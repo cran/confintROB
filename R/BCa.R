@@ -100,7 +100,7 @@ confint_BCa <-
     p <- length(estimates)
     biascorr <-
       qnorm(rowSums(t(coefs) < estimates, na.rm = TRUE) / nsim) #remplacé nsim par length(unique(clusterID))?
-    ci_BCa <- matrix(NA, nrow = p, ncol = 2)
+    ci_BCa <- matrix(NA_real_, nrow = p, ncol = 2)
     quantiles <- qnorm((1 - confint.level) / 2) * c(1, -1)
     for (i in 1:p) {
       adjusted.quantiles <-

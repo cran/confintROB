@@ -107,6 +107,7 @@ attr(,"fullResults")
   Full results of confintROB, a list with components:
    "Percentile", "bootstrap_estimates" 
 Running test for object of class  lmerMod  with arguments method =  BCa 
+Ignoring argument 'clusterID' as it's not needed for this combination of arguments
                          2.5 % 97.5 %
 (Intercept)               1500   1534
 Sigma Batch (Intercept)     32     44
@@ -174,6 +175,7 @@ Rho functions used for fitting:
     vcp: smoothed Huber (k = 5.14, s = 10) 
 > test(model.ds.DAStau)
 Running test for object of class  rlmerMod  with arguments method =  boot 
+Ignoring argument 'clusterID' as it's not needed for this combination of arguments
                          2.5 % 97.5 %
 (Intercept)               1502   1534
 Sigma Batch (Intercept)     23     46
@@ -182,6 +184,7 @@ attr(,"fullResults")
   Full results of confintROB, a list with components:
    "Percentile", "bootstrap_estimates" 
 Running test for object of class  rlmerMod  with arguments method =  BCa 
+Ignoring argument 'clusterID' as it's not needed for this combination of arguments
                          2.5 % 97.5 %
 (Intercept)               1499   1533
 Sigma Batch (Intercept)     38     49

@@ -26,11 +26,15 @@ Loading required package: robustvarComp
 > test.varComprob <-
 +   function(object, data = sleepstudy) {
 +     cat("Running test for object of class ", class(object), "\n")
++     sample <- confintROB:::createParamSampleFunction(model = object,
++                                                      data = data)
 +     set.seed(123)
-+     result <-
-+       confintROB:::createParamSampleFunction(model = object,
-+                                              data = data)(2)
-+     return(result)
++     result11 <- c(sample(1), sample(1))
++     set.seed(123)
++     result2 <- sample(2)
++     names(result11) <- names(result2)
++     stopifnot(all.equal(result11, result2))
++     return(result2)
 +   }
 > 
 > participant <- sleepstudy$Subject
