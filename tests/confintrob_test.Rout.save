@@ -1,6 +1,6 @@
 
-R Under development (unstable) (2023-10-30 r85440) -- "Unsuffered Consequences"
-Copyright (C) 2023 The R Foundation for Statistical Computing
+R version 4.5.0 Patched (2025-05-01 r88186) -- "How About a Twenty-Six"
+Copyright (C) 2025 The R Foundation for Statistical Computing
 Platform: aarch64-apple-darwin20
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -80,8 +80,8 @@ Formula: Yield ~ (1 | Batch)
    Data: Dyestuff
 Control: control
 
-     AIC      BIC   logLik deviance df.resid 
-   333.3    337.5   -163.7    327.3       27 
+      AIC       BIC    logLik -2*log(L)  df.resid 
+    333.3     337.5    -163.7     327.3        27 
 
 Scaled residuals: 
    Min     1Q Median     3Q    Max 
@@ -219,8 +219,8 @@ Formula: Reaction ~ Days + (Days | Subject)
    Data: sleepstudy
 Control: control
 
-     AIC      BIC   logLik deviance df.resid 
-  1763.9   1783.1   -876.0   1751.9      174 
+      AIC       BIC    logLik -2*log(L)  df.resid 
+   1763.9    1783.1    -876.0    1751.9       174 
 
 Scaled residuals: 
    Min     1Q Median     3Q    Max 
@@ -371,4 +371,4 @@ Running test.wild for object of class  rlmerMod
 > 
 > proc.time()
    user  system elapsed 
-  3.115   0.094   3.222 
+  3.208   0.132   3.366 
