@@ -204,7 +204,7 @@ bootstrap.iteration <- function(model, samples, .export, fit, ...) {
     .combine = "rbind",
     .packages = getRequiredPackages(model),
     .export = .export
-  ) %foreachOp% fit(yboot, ...)
+  ) %foreachOp% suppressWarnings(fit(yboot, ...))
   
   if (NCOL(resultr) == 1) {
     if (resultr[1]) {
@@ -222,4 +222,121 @@ getForeachOperator <- function() {
   } else {
     return(foreach::`%do%`)
   }
+}
+
+# Bake model call by evaluating variable references
+#
+# Replaces variable references in a model's call with their actual values.
+# This ensures that update() works correctly even when the original variables
+# are no longer in scope (e.g., during jackknife resampling).
+#
+# Uses R's built-in substitute() for robust symbol replacement.
+#
+# @param model an object of class lmerMod or rlmerMod
+# @param envir environment to look up variables (default: formula environment)
+# @return the model with its call modified to contain evaluated values
+bakeCall <- function(model, envir = NULL) {
+  cl <- getCall(model)
+  if (is.null(cl)) return(model)
+
+  # Build a substitution environment by collecting variables from relevant scopes
+  # Priority: caller_env, formula environment, model frame environment
+  subst_env <- buildSubstEnv(model, envir)
+
+  # Arguments to skip (these are special or should remain as-is)
+  skip_args <- c("", "data", "formula")
+
+  # Process each argument in the call
+  for (i in seq_along(cl)) {
+    arg_name <- names(cl)[i]
+    if (is.null(arg_name)) arg_name <- ""
+
+    # Skip the function name (first element) and special arguments
+    if (i == 1 || arg_name %in% skip_args) next
+
+    arg <- cl[[i]]
+
+    # If argument is a symbol (variable name), try to substitute it
+    if (is.symbol(arg)) {
+      name <- as.character(arg)
+      if (exists(name, envir = subst_env, inherits = FALSE)) {
+        cl[[i]] <- subst_env[[name]]
+      }
+    }
+    # If argument is a call that defines a function (stored as expression)
+    # e.g., init = function(...) lmer(..., control = control)
+    else if (is.call(arg) && identical(arg[[1]], as.symbol("function"))) {
+      # Use substitute() on the function body (3rd element)
+      if (length(arg) >= 3) {
+        arg[[3]] <- do.call(substitute, list(arg[[3]], subst_env))
+        cl[[i]] <- arg
+      }
+    }
+    # If argument is an actual function object, substitute in its body
+    else if (is.function(arg)) {
+      body(arg) <- do.call(substitute, list(body(arg), subst_env))
+      cl[[i]] <- arg
+    }
+  }
+
+  # Update the model's call
+  if (is(model, "lmerMod") || is(model, "rlmerMod")) {
+    model@call <- cl
+  }
+
+  return(model)
+}
+
+# Build substitution environment from model and caller context
+#
+# Collects variables from relevant environments into a single environment
+# for use with substitute().
+#
+# @param model an object of class lmerMod or rlmerMod
+# @param envir caller's environment (optional)
+# @return environment containing variables for substitution
+buildSubstEnv <- function(model, envir = NULL) {
+  # Create new environment for substitution (don't inherit from anywhere)
+  subst_env <- new.env(parent = emptyenv())
+
+  # Collect source environments in reverse priority order
+  # (later ones override earlier ones)
+  source_envs <- list()
+
+  # Global environment (lowest priority)
+  source_envs <- c(source_envs, list(globalenv()))
+
+  # Model frame environment
+  if (is(model, "lmerMod") || is(model, "rlmerMod")) {
+    frame_env <- attr(model@frame, ".Environment")
+    if (!is.null(frame_env)) {
+      source_envs <- c(source_envs, list(frame_env))
+    }
+  }
+
+  # Formula environment
+  formula_env <- environment(formula(model))
+  if (!is.null(formula_env)) {
+    source_envs <- c(source_envs, list(formula_env))
+  }
+
+  # Caller's environment (highest priority)
+  if (!is.null(envir)) {
+    source_envs <- c(source_envs, list(envir))
+  }
+
+  # Copy non-function, non-environment values to substitution environment
+  for (src_env in source_envs) {
+    for (name in ls(src_env, all.names = TRUE)) {
+      tryCatch({
+        val <- get(name, envir = src_env, inherits = FALSE)
+        # Only substitute data values, not functions or environments
+        if (!is.function(val) && !is.environment(val)) {
+          subst_env[[name]] <- val
+        }
+      }, error = function(e) NULL)
+    }
+  }
+
+  return(subst_env)
 }

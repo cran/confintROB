@@ -5,6 +5,7 @@
 # @param clusterID text variable indicating the clustering variable. Only
 #   required for varComprob objects
 # @param .export passed on to \code{\link[foreach]{foreach}}
+# @param caller_env environment from the original confintROB call
 #
 # @return Jackknife estimates and accelerated parameter
 #' @importFrom lme4 fixef VarCorr
@@ -12,29 +13,33 @@
 #' @importFrom tidyr replace_na
 #' @importFrom foreach `%dopar%` foreach
 # @export
-clusjack <- function (model, clusterID, .export, data, ...)
+clusjack <- function (model, clusterID, .export, data, caller_env = NULL, ...)
   UseMethod("clusjack")
 
-clusjack.lmerMod <- function(model, clusterID, .export, data, ...) {
+clusjack.lmerMod <- function(model, clusterID, .export, data, caller_env = NULL, ...) {
+  # Bake the model's call to replace variable references with actual values
+  # This ensures update() works even when original variables are out of scope
+  model      <- bakeCall(model, envir = caller_env)
+
   summ       <- summary(model)
   data       <- model@frame
   nomid      <- names(summ$ngrps)[1]
   idvect     <- data[nomid]
   n          <- nrow(data)
-  
+
   cluster    <- table(idvect)
   clusters   <- unlist(labels(cluster))
   nc         <- length(clusters)
   Obsno      <- unlist(split(1:n, cluster))
-  
+
   coefs      <- jackesampling(nc, Obsno, model, data, .export)
   acc        <- computeAcc(coefs)
   names(acc) <- createNames(model)
   return(acc)
 }
 
-clusjack.rlmerMod <- function(model, clusterID, .export, ...) {
-  clusjack.lmerMod(model, clusterID, .export, ...)
+clusjack.rlmerMod <- function(model, clusterID, .export, data, caller_env = NULL, ...) {
+  clusjack.lmerMod(model, clusterID, .export, data, caller_env = caller_env, ...)
 }
 
 # Title
@@ -82,6 +87,7 @@ computeAcc <- function(coefs) {
 # @param coefs matrix of coefficient estimates in the bootstrap samples
 # @param confint.level confidence level < 1
 # @param .export passed on to \code{\link[foreach]{foreach}}
+# @param caller_env environment from the original confintROB call
 #
 # @return BCa Confidence Interval
 #' @importFrom stats qnorm pnorm
@@ -94,8 +100,9 @@ confint_BCa <-
            confint.level,
            .export,
            data,
+           caller_env = NULL,
            ...) {
-    acc <- clusjack(model, clusterID, .export, data, ...)
+    acc <- clusjack(model, clusterID, .export, data, caller_env = caller_env, ...)
     estimates <- getEstimates(model)
     p <- length(estimates)
     biascorr <-

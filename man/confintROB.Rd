@@ -34,7 +34,7 @@ confintROB(
 
 \item{clusterID}{text variable indicating the clustering variable. This is only required for method \code{"BCa"} or for boot.type \code{"wild"} for \code{\link[robustvarComp]{varComprob}} objects. This vector is used to identify the level of the "cluster" to which these resampling methods should be applied and is not included in the \code{\link[robustvarComp]{varComprob}} objects.}
 
-\item{verify.saved}{check if an existing CI is already computed. Only for the vignette examples}
+\item{verify.saved}{optional result returned by an earlier call to \code{confintROB} with identical parameters. Useful to speed up repeated manuscript rendering.}
 
 \item{.export}{passed on to \code{\link[foreach]{foreach}}}
 

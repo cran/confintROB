@@ -43,7 +43,7 @@
 #' @param nsim number of bootstrap samples, positive integer
 #' @param boot.type type of bootstrap: \code{"wild"} or \code{"parametric"}
 #' @param clusterID text variable indicating the clustering variable. This is only required for method \code{"BCa"} or for boot.type \code{"wild"} for \code{\link[robustvarComp]{varComprob}} objects. This vector is used to identify the level of the "cluster" to which these resampling methods should be applied and is not included in the \code{\link[robustvarComp]{varComprob}} objects.
-#' @param verify.saved check if an existing CI is already computed. Only for the vignette examples
+#' @param verify.saved optional result returned by an earlier call to \code{confintROB} with identical parameters. Useful to speed up repeated manuscript rendering.
 #' @param .export passed on to \code{\link[foreach]{foreach}}
 #' @param varComprob.data a data frame object used to fit the original model. This is only required for the \code{varComprob} objects
 #' @param varComprob.random text variable describing the random effect structure as it would be written with \code{\link[lme4]{lmer}} from \code{\link[lme4]{lme4}}. This is only required for the \code{varComprob} objects
@@ -119,8 +119,10 @@ confintROB <-
     
     retVal <- fullResults[[1]]
     if (method == "BCa") {
+      # Capture caller's environment for bakeCall to resolve variable references
+      caller_env <- parent.frame()
       ci_BCa <-
-        try(confint_BCa(object, nsim, clusterID, fullResults[[2]], level, .export, varComprob.data))
+        try(confint_BCa(object, nsim, clusterID, fullResults[[2]], level, .export, varComprob.data, caller_env = caller_env))
       if (is(ci_BCa, "try-error")) {
         warning("Method 'BCa' failed, returning bootstrap estimates")
       } else {

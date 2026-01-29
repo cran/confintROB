@@ -24,6 +24,29 @@ During seven days, three times a day (from time = 0 to time = 6.667), a sample o
 adults (identified by the variable id) were randomly assigned to either a treatment group (treat=1)
 or a control group (treat=0) and were required to report their mood (pos).
 }
+\examples{
+data(medication)
+str(medication)
+
+# Fit mixed-effects model with lme4
+library(lme4)
+model.ML <- lmer(pos ~ treat * time + (time | id), data = medication,
+                 REML = FALSE)
+summary(model.ML)
+
+\donttest{
+# Fit robust mixed-effects model with robustlmm
+library(robustlmm)
+model.RSE <- rlmer(pos ~ treat * time + (time | id), data = medication,
+                   method = "DAStau")
+compare(model.ML, model.RSE)
+
+# Compute confidence intervals
+set.seed(1)
+ci <- confintROB(model.RSE, boot.type = "wild", nsim = 100)
+ci
+}
+}
 \references{
 Tomarken, A. J., Shelton, R. C., Elkins, L., & Anderson, T. (1997). Sleep deprivation and anti-depressant medication: unique effects on positive and negative affect. In American Psychological Society Meeting, Washington, DC.
 }

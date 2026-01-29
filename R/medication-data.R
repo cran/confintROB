@@ -20,4 +20,27 @@
 #' @keywords datasets
 #'
 #' @references Tomarken, A. J., Shelton, R. C., Elkins, L., & Anderson, T. (1997). Sleep deprivation and anti-depressant medication: unique effects on positive and negative affect. In American Psychological Society Meeting, Washington, DC.
+#'
+#' @examples
+#' data(medication)
+#' str(medication)
+#'
+#' # Fit mixed-effects model with lme4
+#' library(lme4)
+#' model.ML <- lmer(pos ~ treat * time + (time | id), data = medication,
+#'                  REML = FALSE)
+#' summary(model.ML)
+#'
+#' \donttest{
+#' # Fit robust mixed-effects model with robustlmm
+#' library(robustlmm)
+#' model.RSE <- rlmer(pos ~ treat * time + (time | id), data = medication,
+#'                    method = "DAStau")
+#' compare(model.ML, model.RSE)
+#'
+#' # Compute confidence intervals
+#' set.seed(1)
+#' ci <- confintROB(model.RSE, boot.type = "wild", nsim = 100)
+#' ci
+#' }
 "medication"
