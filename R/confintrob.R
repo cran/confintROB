@@ -14,7 +14,7 @@
 #' 
 #' \code{boot.type} (for \code{method}s \code{"boot"} and \code{"BCa"}):
 #' 
-#' - \code{"parametric"}: the classical parametric bootstrap scheme is used to create bootstrap sample(s)
+#' - \code{"parametric"}: the classical parametric bootstrap scheme is used to create bootstrap sample(s). For each bootstrap sample, both the random effects and the errors are generated anew from the fitted model.
 #' 
 #' - \code{"wild"}: the semi-parametric bootstrap scheme is used to create bootstrap sample(s)
 #' @references Agostinelli, C., & Yohai, V. J. (2016). Composite robust estimators for linear mixed models. Journal of the American Statistical Association, 111 (516), 1764-1774. doi:10.1080/01621459.2015.1115358
@@ -42,7 +42,7 @@
 #' @param method type of CIs: \code{"Wald"}, \code{"boot"}, \code{"BCa"}
 #' @param nsim number of bootstrap samples, positive integer
 #' @param boot.type type of bootstrap: \code{"wild"} or \code{"parametric"}
-#' @param clusterID text variable indicating the clustering variable. This is only required for method \code{"BCa"} or for boot.type \code{"wild"} for \code{\link[robustvarComp]{varComprob}} objects. This vector is used to identify the level of the "cluster" to which these resampling methods should be applied and is not included in the \code{\link[robustvarComp]{varComprob}} objects.
+#' @param clusterID clustering variable for method \code{"BCa"} (jackknife) and for boot.type \code{"wild"} (all observations of a cluster get the same bootstrap weight). For \code{\link[robustvarComp]{varComprob}} objects, it is required and gives the name of the clustering variable in \code{varComprob.data}. For \code{lmerMod} and \code{rlmerMod} objects, it is either the name of a grouping factor of the model or a vector with one value per observation. By default, the coarsest grouping factor that contains all the others is used, e.g., \code{batch} for \code{(1 | batch/cask)}. Models with crossed grouping factors have no independent clusters and require \code{clusterID}.
 #' @param verify.saved optional result returned by an earlier call to \code{confintROB} with identical parameters. Useful to speed up repeated manuscript rendering.
 #' @param .export passed on to \code{\link[foreach]{foreach}}
 #' @param varComprob.data a data frame object used to fit the original model. This is only required for the \code{varComprob} objects

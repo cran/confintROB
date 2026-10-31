@@ -2,8 +2,8 @@
 # @title Jackknife estimates
 #
 # @param model an object of class lmerMod or rlmerMod
-# @param clusterID text variable indicating the clustering variable. Only
-#   required for varComprob objects
+# @param clusterID text variable indicating the clustering variable. Required
+#   for varComprob objects and for crossed grouping factors
 # @param .export passed on to \code{\link[foreach]{foreach}}
 # @param caller_env environment from the original confintROB call
 #
@@ -21,16 +21,13 @@ clusjack.lmerMod <- function(model, clusterID, .export, data, caller_env = NULL,
   # This ensures update() works even when original variables are out of scope
   model      <- bakeCall(model, envir = caller_env)
 
-  summ       <- summary(model)
   data       <- model@frame
-  nomid      <- names(summ$ngrps)[1]
-  idvect     <- data[nomid]
+  idvect     <- getClusters(model, if (missing(clusterID)) NULL else clusterID)
   n          <- nrow(data)
 
-  cluster    <- table(idvect)
-  clusters   <- unlist(labels(cluster))
-  nc         <- length(clusters)
-  Obsno      <- unlist(split(1:n, cluster))
+  # Observations of each cluster; jackknife sample i leaves out cluster i
+  Obsno      <- split(seq_len(n), idvect)
+  nc         <- length(Obsno)
 
   coefs      <- jackesampling(nc, Obsno, model, data, .export)
   acc        <- computeAcc(coefs)

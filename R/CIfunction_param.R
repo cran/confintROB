@@ -15,7 +15,7 @@ parametric.lmerMod <-
   function(model, nsim, max.tries = 100, .export, data, varComprob.random, ...) {
     class(model) <- "lmerMod"
     sample <- function(n) {
-      simulate(model, n, use.u = TRUE)
+      simulate(model, n, use.u = FALSE)
     }
     fit <- createFitFunction.lmerMod(model)
     bootstrap(model, nsim, max.tries, .export, sample, fit, ...)

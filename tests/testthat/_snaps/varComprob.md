@@ -4,26 +4,26 @@
       print(summary(model.S), digits = 2)
     Output
       Method:  S
-
+      
       Fixed effects:
                   Estimate Std. Error z value Pr(>|z|)
       (Intercept)    253.8        6.6    38.2   <2e-16 ***
       Days            10.8        1.6     6.9    7e-12 ***
       ---
       Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
+      
        Random effect variances:
        sigma2_u0 Covariance  sigma2_u1
       1104.97202  -49.27180   52.98219
-
+      
        Residual variance:
       error variance
             692.5566
-
+      
        Value of the objective function at convergence:
       [1] 10752.14
-
-
+      
+      
       Robustness weights:
        6 observations c(1,6,7,11,15,18) are outliers with |weight| = 0 ( < 0.005556);
        The remaining 12 ones are summarized as
@@ -61,22 +61,22 @@
       print(summary(model.cTAU), digits = 2)
     Output
       Method:  compositeTau
-
+      
       Fixed effects:
                   Estimate Std. Error z value Pr(>|z|)
       (Intercept)    250.9        7.8    32.2   <2e-16 ***
       Days            10.2        1.5     6.7    3e-11 ***
       ---
       Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
+      
        Random effect variances:
        sigma2_u0 Covariance  sigma2_u1
        819.02411  -26.54169   49.76142
-
+      
        Residual variance:
       error variance
             376.8007
-
+      
        Value of the objective function at convergence:
       [1] 7675.007
 
@@ -118,22 +118,22 @@
       print(summary(model.cTAU_permuted), digits = 2)
     Output
       Method:  compositeTau
-
+      
       Fixed effects:
                   Estimate Std. Error z value Pr(>|z|)
       (Intercept)    250.9        7.8    32.2   <2e-16 ***
       Days            10.2        1.5     6.7    3e-11 ***
       ---
       Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
+      
        Random effect variances:
        sigma2_u0 Covariance  sigma2_u1
        819.02411  -26.54169   49.76142
-
+      
        Residual variance:
       error variance
             376.8007
-
+      
        Value of the objective function at convergence:
       [1] 7675.007
 

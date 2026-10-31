@@ -7,20 +7,20 @@
       Formula: Yield ~ (1 | Batch)
          Data: Dyestuff
       Control: control
-
+      
             AIC       BIC    logLik -2*log(L)  df.resid
           333.3     337.5    -163.7     327.3        27
-
+      
       Scaled residuals:
          Min     1Q Median     3Q    Max
        -1.43  -0.80   0.15   0.77   1.80
-
+      
       Random effects:
        Groups   Name        Variance Std.Dev.
        Batch    (Intercept) 1388     37
        Residual             2451     50
       Number of obs: 30, groups:  Batch, 6
-
+      
       Fixed effects:
                   Estimate Std. Error t value
       (Intercept)     1528         18      86
@@ -37,10 +37,10 @@
         boot.type = "parametric")
       print(result, digits = 2)
     Output
-                               2.5 % 97.5 %
-      (Intercept)               1503   1535
-      Sigma Batch (Intercept)     17     42
-      Sigma Residual              40     61
+                                2.5 % 97.5 %
+      (Intercept)              1499.1   1555
+      Sigma Batch (Intercept)     4.9     48
+      Sigma Residual             40.0     61
       attr(,"fullResults")
         Full results of confintROB, a list with components:
          "Percentile", "bootstrap_estimates"
@@ -58,9 +58,9 @@
       print(result, digits = 2)
     Output
                                2.5 % 97.5 %
-      (Intercept)               1500   1534
-      Sigma Batch (Intercept)     32     44
-      Sigma Residual              41     62
+      (Intercept)               1499   1558
+      Sigma Batch (Intercept)     26     50
+      Sigma Residual              40     62
       attr(,"fullResults")
         Full results of confintROB, a list with components:
          "BCa", "Percentile", "bootstrap_estimates", "biasBCa", "acc"
@@ -103,39 +103,39 @@
       1513.3 1478.7 1538.5 1507.0 1391.4 1383.1 1638.9 1424.4 1556.4 1638.9 1696.6
           23     24     25     26     27     28     29     30
       1506.9 1704.9 1688.4 1532.2 1573.2 1576.3 1557.4 1579.5
-
+      
 
 # confintROB works with rlmerMod objects (Dyestuff)
 
     Code
-      print(summary(model.ds.DAStau), digits = 2)
+      print(summary(model.ds.DAStau, df = "none"), digits = 2)
     Output
       Robust linear mixed model fit by DAStau
       Formula: Yield ~ (1 | Batch)
          Data: Dyestuff
-
+      
       Scaled residuals:
          Min     1Q Median     3Q    Max
       -1.472 -0.682  0.084  0.738  1.934
-
+      
       Random effects:
        Groups   Name        Variance Std.Dev.
        Batch    (Intercept) 2023     45
        Residual             2517     50
       Number of obs: 30, groups: Batch, 6
-
+      
       Fixed effects:
                   Estimate Std. Error t value
       (Intercept)     1527         21      74
-
+      
       Robustness weights for the residuals:
        25 weights are ~= 1. The remaining 5 ones are
           2     3     5    18    23
       0.950 0.950 0.930 0.695 0.901
-
+      
       Robustness weights for the random effects:
       [1] 1 1 1 1 1 1
-
+      
       Rho functions used for fitting:
         Residuals:
           eff: smoothed Huber (k = 1.345, s = 10)
@@ -159,10 +159,10 @@
     Code
       print(result, digits = 2)
     Output
-                               2.5 % 97.5 %
-      (Intercept)               1502   1534
-      Sigma Batch (Intercept)     23     46
-      Sigma Residual              41     61
+                                2.5 % 97.5 %
+      (Intercept)              1491.4   1559
+      Sigma Batch (Intercept)     4.8     56
+      Sigma Residual             40.6     61
       attr(,"fullResults")
         Full results of confintROB, a list with components:
          "Percentile", "bootstrap_estimates"
@@ -176,16 +176,13 @@
     Code
       set.seed(1234)
       result <- confintROB(object = model.ds.DAStau, level = 0.95, method = "BCa",
-        nsim = 10, boot.type = "parametric", clusterID = "Subject")
-    Message
-      Ignoring argument 'clusterID' as it's not needed for this combination of arguments
-    Code
+        nsim = 10, boot.type = "parametric", clusterID = "Batch")
       print(result, digits = 2)
     Output
                                2.5 % 97.5 %
-      (Intercept)               1499   1533
-      Sigma Batch (Intercept)     38     49
-      Sigma Residual              42     63
+      (Intercept)               1491   1562
+      Sigma Batch (Intercept)     23     60
+      Sigma Residual              40     63
       attr(,"fullResults")
         Full results of confintROB, a list with components:
          "BCa", "Percentile", "bootstrap_estimates", "biasBCa", "acc"
@@ -228,7 +225,7 @@
       1512.2 1477.5 1537.4 1505.9 1391.8 1383.6 1639.3 1424.8 1556.8 1639.3 1697.1
           23     24     25     26     27     28     29     30
       1507.3 1705.3 1688.8 1531.1 1572.1 1575.2 1556.3 1578.4
-
+      
 
 # wild bootstrap works with sleepstudy models
 
@@ -239,26 +236,26 @@
       Formula: Reaction ~ Days + (Days | Subject)
          Data: sleepstudy
       Control: control
-
+      
             AIC       BIC    logLik -2*log(L)  df.resid
          1763.9    1783.1    -876.0    1751.9       174
-
+      
       Scaled residuals:
          Min     1Q Median     3Q    Max
        -3.94  -0.47   0.03   0.46   5.18
-
+      
       Random effects:
        Groups   Name        Variance Std.Dev. Corr
        Subject  (Intercept) 565      23.8
                 Days         33       5.7     0.08
        Residual             655      25.6
       Number of obs: 180, groups:  Subject, 18
-
+      
       Fixed effects:
                   Estimate Std. Error t value
       (Intercept)    251.4        6.6      38
       Days            10.5        1.5       7
-
+      
       Correlation of Fixed Effects:
            (Intr)
       Days -0.138
@@ -314,45 +311,45 @@
       315.66 348.29 337.13 325.41 330.72 240.16 254.65 256.65 265.55 297.06 287.71
          177    178    179    180
       301.63 313.16 313.98 334.05
-
+      
 
 ---
 
     Code
-      print(summary(model.ss.DAStau), digits = 2)
+      print(summary(model.ss.DAStau, df = "none"), digits = 2)
     Output
       Robust linear mixed model fit by DAStau
       Formula: Reaction ~ Days + (Days | Subject)
          Data: sleepstudy
-
+      
       Scaled residuals:
          Min     1Q Median     3Q    Max
        -5.83  -0.54  -0.02   0.54   6.62
-
+      
       Random effects:
        Groups   Name        Variance Std.Dev. Corr
        Subject  (Intercept) 782      28.0
                 Days         42       6.5     -0.04
        Residual             399      20.0
       Number of obs: 180, groups: Subject, 18
-
+      
       Fixed effects:
                   Estimate Std. Error t value
       (Intercept)    251.1        7.3      35
       Days            10.7        1.6       7
-
+      
       Correlation of Fixed Effects:
            (Intr)
       Days -0.141
-
+      
       Robustness weights for the residuals:
        154 weights are ~= 1. The remaining 26 ones are summarized as
          Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
         0.203   0.619   0.730   0.697   0.896   0.999
-
+      
       Robustness weights for the random effects:
        All 36 weights are ~= 1.
-
+      
       Rho functions used for fitting:
         Residuals:
           eff: smoothed Huber (k = 1.345, s = 10)
@@ -412,5 +409,5 @@
       316.79 349.75 338.92 327.53 333.17 239.64 254.46 256.79 266.01 297.85 288.83
          177    178    179    180
       303.09 314.94 316.10 336.51
-
+      
 

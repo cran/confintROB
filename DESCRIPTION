@@ -2,8 +2,8 @@ Package: confintROB
 Type: Package
 Title: Confidence Intervals for Robust and Classical Linear Mixed Model
         Estimators
-Version: 1.1-1
-Date: 2026-01-28
+Version: 1.2
+Date: 2026-10-24
 Authors@R: 
   c(person("Fabio", "Mason", email = "fabio.mason@unige.ch", role = c("aut", "cre")),
     person("Manuel", "Koller", email = "kollerma@proton.me", role = "aut"),
@@ -22,10 +22,10 @@ Suggests: robustlmm (>= 3.1-1), robustvarComp (>= 0.1-7), lmerTest (>=
         doParallel
 Config/testthat/edition: 3
 LazyData: true
-Packaged: 2026-01-28 20:15:50 UTC; kollerma
+Packaged: 2026-10-30 19:15:01 UTC; kollerma
 Author: Fabio Mason [aut, cre],
   Manuel Koller [aut],
   Eva Cantoni [ctb, ths],
   Paolo Ghisletta [ths]
 Repository: CRAN
-Date/Publication: 2026-01-29 20:10:02 UTC
+Date/Publication: 2026-10-31 00:40:02 UTC

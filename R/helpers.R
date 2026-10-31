@@ -9,20 +9,80 @@ checkRobustlmmVersion <- function(object) {
 }
 
 checkClusterID <- function(object, clusterID, method, boot.type) {
-  if (missing(clusterID)) {
-    if (is(object, "varComprob") &&
-        (method == "BCa" || boot.type == "wild")) {
-      stop(
-        "Argument 'clusterID' is needed to do BCa or wild bootstrap",
-        " for varComprob objects"
+  if (is(object, "varComprob")) {
+    if (missing(clusterID)) {
+      if (method == "BCa" || boot.type == "wild") {
+        stop(
+          "Argument 'clusterID' is needed to do BCa or wild bootstrap",
+          " for varComprob objects"
+        )
+      }
+    } else {
+      message(
+        "Ignoring argument 'clusterID' as it's not needed ",
+        "for this combination of arguments"
       )
     }
-  } else {
+  } else if (method == "BCa" || boot.type == "wild") {
+    # Fails early for crossed designs without clusterID and for an invalid one
+    getClusters(object, if (missing(clusterID)) NULL else clusterID)
+  } else if (!missing(clusterID)) {
     message(
       "Ignoring argument 'clusterID' as it's not needed ",
       "for this combination of arguments"
     )
   }
+  invisible(NULL)
+}
+
+# Clusters for the wild bootstrap and the BCa jackknife of lmerMod and rlmerMod
+# fits. The clusters must be independent, so the default is the coarsest
+# grouping factor that contains all others (the same rule as
+# simulate.rlmerMod(type = "wild") in robustlmm). Crossed designs have no such
+# factor and need clusterID: the name of a grouping factor or a vector with one
+# value per observation.
+#' @importFrom lme4 getME
+getClusters <- function(model, clusterID = NULL) {
+  fl <- getME(model, "flist")
+  if (is.null(clusterID)) {
+    if (length(fl) == 1L) {
+      return(fl[[1L]])
+    }
+    nested_in <- function(A, B) all(rowSums(table(A, B) > 0L) == 1L)
+    for (b in order(vapply(fl, nlevels, integer(1)))) {
+      if (all(vapply(seq_along(fl), function(a)
+        a == b || nested_in(fl[[a]], fl[[b]]), logical(1)))) {
+        return(fl[[b]])
+      }
+    }
+    stop(
+      "The grouping factors (", paste(names(fl), collapse = ", "),
+      ") are crossed, so the model has no independent clusters. ",
+      "Use argument 'clusterID' to choose the grouping factor (or give a ",
+      "vector with one value per observation) defining the clusters",
+      call. = FALSE
+    )
+  }
+  if (is.character(clusterID) && length(clusterID) == 1L) {
+    if (!clusterID %in% names(fl)) {
+      stop(
+        "Argument 'clusterID' ('", clusterID, "') is not a grouping factor ",
+        "of the model; available: ", paste(names(fl), collapse = ", "),
+        call. = FALSE
+      )
+    }
+    return(fl[[clusterID]])
+  }
+  n <- length(getME(model, "y"))
+  if (length(clusterID) != n || anyNA(clusterID)) {
+    stop(
+      "Argument 'clusterID' must be the name of a grouping factor or a ",
+      "vector with one value per observation (", n, "), without missing ",
+      "values",
+      call. = FALSE
+    )
+  }
+  factor(clusterID)
 }
 
 checkData <- function(object, varComprob.data, method, boot.type) {

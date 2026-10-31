@@ -50,12 +50,12 @@ test_that("createParamSampleFunction works with varComprob S-estimator", {
     )
   )
 
-  expect_snapshot({
+  expect_snapshot(transform = strip_trailing_ws, {
     print(summary(model.S), digits = 2)
   })
 
   # Test createParamSampleFunction
-  expect_snapshot({
+  expect_snapshot(transform = strip_trailing_ws, {
     cat("Running test for object of class", paste(class(model.S), collapse = " "), "\n")
     sample <- confintROB:::createParamSampleFunction(model = model.S, data = sleepstudy)
     set.seed(123)
@@ -131,11 +131,11 @@ test_that("createParamSampleFunction works with varComprob composite-TAU estimat
     )
   )
 
-  expect_snapshot({
+  expect_snapshot(transform = strip_trailing_ws, {
     print(summary(model.cTAU), digits = 2)
   })
 
-  expect_snapshot({
+  expect_snapshot(transform = strip_trailing_ws, {
     cat("Running test for object of class", paste(class(model.cTAU), collapse = " "), "\n")
     sample <- confintROB:::createParamSampleFunction(model = model.cTAU, data = sleepstudy)
     set.seed(123)
@@ -222,7 +222,7 @@ test_that("createParamSampleFunction works with permuted data", {
   groups_permuted <- groups[permutation, ]
   data_permuted <- sleepstudy[permutation, ]
 
-  expect_snapshot({
+  expect_snapshot(transform = strip_trailing_ws, {
     cat("Permutation head:", head(permutation), "\n")
   })
 
@@ -236,11 +236,11 @@ test_that("createParamSampleFunction works with permuted data", {
     )
   )
 
-  expect_snapshot({
+  expect_snapshot(transform = strip_trailing_ws, {
     print(summary(model.cTAU_permuted), digits = 2)
   })
 
-  expect_snapshot({
+  expect_snapshot(transform = strip_trailing_ws, {
     cat("Running test for permuted data\n")
     sample_permuted <- confintROB:::createParamSampleFunction(
       model = model.cTAU_permuted,

@@ -2,8 +2,9 @@
 # @title Wild Confidence Interval
 #
 # @param model an object of class lmerMod, rlmerMod or varComprob
-# @param clusterID text variable indicating the clustering variable (only
-#   needed to do wild bootstrap for varComprob objects)
+# @param clusterID text variable indicating the clustering variable (required
+#   for varComprob objects and for lmerMod and rlmerMod objects with crossed
+#   grouping factors)
 # @param nsim number of bootstrap samples, positive integer
 #
 # @return Returns a wild Confidence Interval
@@ -48,7 +49,7 @@ wild.lmerMod <-
            ...) {
     y 		 <- getME(model, "y")
     X      <- as.matrix(getME(model, "X"))
-    id     <- getME(model, "flist")[[1]]
+    id     <- getClusters(model, if (missing(clusterID)) NULL else clusterID)
     bet    <- unname(fixef(model))
     sample <- createWildSampleFunction(y, X, id, bet)
     fit    <- createFitFunction.lmerMod(model)
